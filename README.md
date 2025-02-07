@@ -1,5 +1,5 @@
 # Education_ERP
-<h1 align="center">Education ERP System - Laravel 8 CMS Project</h1>
+<h1 align="center">Education ERP System - Laravel 11 CMS Project</h1>
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400"></a></p>
 <p align="center"><img src="images/login.PNG"  height="auto" width="100%"></p>
 <p align="center"><img src="images/dash.PNG"  height="auto" width="100%"></p>
