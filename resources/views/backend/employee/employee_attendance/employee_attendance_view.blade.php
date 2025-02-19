@@ -49,7 +49,7 @@
 			@endforeach
 							 
 						</tbody>
-						<tfoot>
+						<tfoot>zz
 							 
 						</tfoot>
 					  </table>
