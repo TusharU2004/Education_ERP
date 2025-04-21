@@ -4,137 +4,133 @@ namespace App\Http\Controllers\Backend\Account;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\AssignStudent;
 use App\Models\User;
-use App\Models\DiscountStudent;
 
-use App\Models\StudentYear;
-use App\Models\StudentClass;
-use App\Models\StudentGroup;
-use App\Models\StudentShift;
-use DB;
-use PDF;
-
-use App\Models\Designation;
-use App\Models\EmployeeSallaryLog;
 use App\Models\EmployeeAttendance;
 
 use App\Models\AccountEmployeeSalary;
 
 class AccountSalaryController extends Controller
 {
-    public function AccountSalaryView(){
 
-    	$data['allData'] = AccountEmployeeSalary::all();
-    	return view('backend.account.employee_salary.employee_salary_view',$data);
-
+    public function __construct()
+    {
+        $this->middleware('permission:School Account Management');
+    }
+    public function AccountSalaryView()
+    {
+        $allData = AccountEmployeeSalary::all();
+        return view('backend.account.employee_salary.employee_salary_view', compact('allData'));
     }
 
 
-    public function AccountSalaryAdd(){
+    public function AccountSalaryAdd(Request $request)
+    {
+        $month = $request->month;
 
-      return view('backend.account.employee_salary.employee_salary_add');
+        if (!empty($month)) {
+            $year = date('Y', strtotime($month));
+            $month = date('m', strtotime($month));
+
+          
+            $data = EmployeeAttendance::select('employee_id')
+                ->groupBy('employee_id')
+                ->with(['user'])
+                ->whereMonth('date',$month)
+                ->get();
+                
+            $allEmployees = User::where('usertype', 'employee')
+                ->whereMonth('join_date', '<=', $month)
+                ->whereYear('join_date','<=',$year)
+                ->get();
+
+                $employees = [];
+
+            foreach ($allEmployees as $employee) {
+
+                $attend = $data->where('employee_id', $employee->id)->first();
+
+                $account_salary = AccountEmployeeSalary::where('employee_id', $employee->id)
+                    ->whereYear('date', $year)
+                    ->whereMonth('date', $month)
+                    ->first();
+
+                    $totalattend = EmployeeAttendance::whereYear('date','=',$year)
+                    ->whereMonth('date','=',$month)
+                    ->where('employee_id', $employee->id)
+                    ->get();
+
+                $presentcount = count($totalattend->where('attend_status', 'Present'));
+                $absentcount = count($totalattend->where('attend_status', 'Absent'));
+
+                $salary = (float) $employee->salary;
+
+                $totalwork = $presentcount + $absentcount;
+
+                if ($totalwork == 0) {
+                    $totalsalary = $salary;
+                } else {
+                    $salaryperday = $salary / $totalwork;
+                    $totalsalaryminus = $absentcount * $salaryperday;
+                    $totalsalary = (int) ($salary - $totalsalaryminus);
+                }
+
+                $employees[] = [
+                    'id' => $employee->id,
+                    'id_no' => $employee->id_no,
+                    'name' => $employee->name,
+                    'salary' => $employee->salary,
+                    'totalwork' => $totalwork,
+                    'absent' => $absentcount,
+                    'totalsalary' => $totalsalary,
+                    'paid' => $account_salary ? true : false,
+                    'paid_date' => $account_salary ? $account_salary->date : null,
+                    'paid_amount' => $account_salary ? $account_salary->amount : null
+                ];
+            }
+            return view('backend.account.employee_salary.employee_salary_add', compact('employees', 'month'));
+        }
+        return view('backend.account.employee_salary.employee_salary_add');
     }
- 
-
-    public function AccountSalaryGetEmployee(Request $request){
-
-    	$date = date('Y-m',strtotime($request->date));
-    	 if ($date !='') {
-    	 	$where[] = ['date','like',$date.'%'];
-    	    }
-    	 
-    	 $data = EmployeeAttendance::select('employee_id')->groupBy('employee_id')->with(['user'])->where($where)->get();
-    	 // dd($allStudent);
-    	 $html['thsource']  = '<th>SL</th>';
-    	 $html['thsource'] .= '<th>ID NO</th>';
-    	 $html['thsource'] .= '<th>Employee Name</th>';
-    	 $html['thsource'] .= '<th>Basic Salary</th>';
-    	 $html['thsource'] .= '<th>Salary This Month</th>';
-    	 $html['thsource'] .= '<th>Select</th>';
 
 
-    	 foreach ($data as $key => $attend) {
+    public function AccountSalaryStore(Request $request)
+    {
 
-    	 	$account_salary = AccountEmployeeSalary::where('employee_id',$attend->employee_id)->where('date',$date)->first();
+        foreach ($request->employee_id as $employeeId) {
 
-    	 	if($account_salary !=null) {
-			 	$checked = 'checked';
-			 }else{
-			 	$checked = '';
-			 }   
+            if (empty($request->salary_date[$employeeId])) {
+                continue;
+            }
 
-    	 	$totalattend = EmployeeAttendance::with(['user'])->where($where)->where('employee_id',$attend->employee_id)->get();
-    	 	$absentcount = count($totalattend->where('attend_status','Absent'));
+            $salaryMonth = date('Y-m', strtotime($request->salary_date[$employeeId]));
 
-    	 	 
- 	$html[$key]['tdsource']  = '<td>'.($key+1).'</td>';
- 	$html[$key]['tdsource'] .= '<td>'.$attend['user']['id_no'].'<input type="hidden" name="date" value="'.$date.'" >'.'</td>';
+            $existingSalary = AccountEmployeeSalary::where('employee_id', $employeeId)
+                ->where('date', 'like', $salaryMonth . '%')
+                ->first();
 
- 	$html[$key]['tdsource'] .= '<td>'.$attend['user']['name'].'</td>';
- 	$html[$key]['tdsource'] .= '<td>'.$attend['user']['salary'].'</td>';
- 	 
- 	
- 	$salary = (float)$attend['user']['salary'];
- 	$salaryperday = (float)$salary/30;
- 	$totalsalaryminus = (float)$absentcount*(float)$salaryperday;
- 	$totalsalary = (float)$salary-(float)$totalsalaryminus;
+            if ($existingSalary) {
+                $existingSalary->update([
+                    'amount' => $request->totalsalary[$employeeId],
+                    'date' => $request->salary_date[$employeeId]
+                ]);
+            } else {
+                AccountEmployeeSalary::create([
+                    'employee_id' => $employeeId,
+                    'date' => $request->salary_date[$employeeId],
+                    'amount' => $request->totalsalary[$employeeId],
+                ]);
+            }
 
- 	$html[$key]['tdsource'] .='<td>'.$totalsalary.'<input type="hidden" name="amount[]" value="'.$totalsalary.'" >'.'</td>';
+        }
 
- 	 
- 	$html[$key]['tdsource'] .='<td>'.'<input type="hidden" name="employee_id[]" value="'.$attend->employee_id.'">'.'<input type="checkbox" name="checkmanage[]" id="'.$key.'" value="'.$key.'" '.$checked.' style="transform: scale(1.5);margin-left: 10px;"> <label for="'.$key.'"> </label> '.'</td>'; 
+        $notification = array(
+            'message' => 'Well Done Data Successfully Updated',
+            'alert-type' => 'success'
+        );
 
-      }  // end foreach
-    	return response()->json(@$html);
+        return redirect()->route('account.salary.view')->with($notification);
 
-    } // end Method
-
-
-
-    public function AccountSalaryStore(Request $request){
-
-    	$date = date('Y-m', strtotime($request->date));
-
-    	AccountEmployeeSalary::where('date',$date)->delete();
-
-    	$checkdata = $request->checkmanage;
-
-    	if ($checkdata !=null) {
-    		for ($i=0; $i <count($checkdata) ; $i++) { 
-    			$data = new AccountEmployeeSalary(); 
-    			$data->date = $date; 
-    			$data->employee_id = $request->employee_id[$checkdata[$i]];
-    			$data->amount = $request->amount[$checkdata[$i]];
-    			$data->save();
-    		} 
-    	} // end if 
-
-    	if (!empty(@$data) || empty($checkdata)) {
-
-    	$notification = array(
-    		'message' => 'Well Done Data Successfully Updated',
-    		'alert-type' => 'success'
-    	);
-
-    	return redirect()->route('account.salary.view')->with($notification);
-    	}else{
-
-    		$notification = array(
-    		'message' => 'Sorry Data not Saved',
-    		'alert-type' => 'error'
-    	);
-
-    	return redirect()->back()->with($notification);
-
-    	} 
-
-    } // end method 
-
-
-
-
-
+    }
 
 }
- 

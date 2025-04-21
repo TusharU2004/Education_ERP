@@ -13,7 +13,7 @@
                         <h4 class="box-title">Student <strong>Marks Entry</strong></h4>
                      </div>
                      <div class="box-body">
-                        <form method="get" action="{{ route('marks.entry.get') }}">
+                        <form method="get" action="{{ route('marks.entry.add') }}">
                            <div class="row">
                               <div class="col-md-3">
                                  <div class="form-group">
@@ -79,49 +79,50 @@
                </div>
             </div>
             @if (!empty($students))
-               <form action="{{ route('marks.entry.store') }}" method="post">
+               <form action="{{ route('marks.entry.store') }}" method="POST">
                   @csrf
                   <input type="hidden" name="year_id" value="{{ $year_id }}">
                   <input type="hidden" name="class_id" value="{{ $class_id }}">
                   <input type="hidden" name="exam_type_id" value="{{ $exam_type_id }}">
                   <input type="hidden" name="assign_subject_id" value="{{ $assign_subject_id }}">
-                  
+
                   <div class="box bb-3 border-warning">
                      <div class="box-body">
-                        <div class="table-responsive">
-                           <table class="table" id="example1">
-                              <thead>
-                                 <th width="15%">Roll Number</th>
-                                 <th>Unique ID</th>
-                                 <th>Student Name</th>
-                                 <th>Last Name</th>
-                                 <th width="20%">Obtain Marks</th>
-                              </thead>
-                              <tbody>
-                                 @foreach ($students as $key => $student)
-                                    <tr>
-                                       <td>
-                                          {{ $student->roll }}
-                                          <input type="hidden" name="student_id[]" value="{{ $student->student_id }}">
-                                       </td>
-                                       <td>
-                                          {{ $student->student->id_no }}
-                                          <input type="hidden" name="id_no[]" value="{{ $student->student->id_no }}">
-                                       </td>
-                                       <td>{{ $student->student->name }}</td>
-                                       <td>{{ $student->student->lname }}</td>
-                                       <td>
-                                          @php
-                                             $existing_mark = $studentMarks[$student->student_id]->marks ?? '';
-                                          @endphp
-                                          <input type="text" class="form-control form-control-sm" name="marks[]" value="{{ $existing_mark }}">
-                                       </td>
-                                    </tr>
-                                 @endforeach
-                              </tbody>
-                           </table>
-                        </div>
-                        <input type="submit" class="btn btn-primary">
+                           <div class="table-responsive">
+                              <table class="table" id="example1">
+                                 <thead>
+                                       <th>SL</th>
+                                       <th>Student ID</th>
+                                       <th>Roll</th>
+                                       <th>Name</th>
+                                       <th>Total Marks</th>
+                                       <th>Obtain Marks</th>
+                                 </thead>
+                                 <tbody>
+                                       @foreach ($students as $key => $student)
+                                       <tr>
+                                          <td>{{ $key + 1 }}</td>
+                                          <td>
+                                             {{ $student->student->id_no }}
+                                             <input type="hidden" name="id_no[]" value="{{ $student->student->id_no }}">
+                                          </td>
+                                          <td>{{ $student->roll }}
+                                             <input type="hidden" name="student_id[]" value="{{ $student->student_id }}">
+                                          </td>
+                                          <td>{{ $student->student->lname }} {{ $student->student->name }} {{ $student->student->fname }}</td>
+                                          <td>{{ $totalmarks->full_mark }}</td>
+                                          <td>
+                                             @php
+                                                   $existing_mark = $studentMarks[$student->student_id]->marks ?? '';
+                                             @endphp
+                                             <input type="text" class="form-control form-control-sm" name="marks[]" value="{{ $existing_mark }}">
+                                          </td>
+                                       </tr>
+                                       @endforeach
+                                 </tbody>
+                              </table>
+                           </div>
+                           <input type="submit" class="btn btn-rounded btn-info mb-5" value="Save Marks">
                      </div>
                   </div>
                </form>
@@ -143,8 +144,8 @@
                      $('#subject_id').empty();
                      $('#subject_id').append('<option value="" selected disabled>Select Subject</option>');
                      $.each(data, function(key, subject) {
-                        $('#subject_id').append('<option value="' + subject.id + '"' + 
-                           (subject.id == "{{ $assign_subject_id ?? '' }}" ? 'selected' : '') + '>' + subject.name + '</option>');
+                        $('#subject_id').append('<option value="' + subject.subject_id + '"' + 
+                           (subject.id == "{{ $assign_subject_id ?? '' }}" ? 'selected' : '') + '>' + subject.school_subject.name + '</option>');
                      });
                   }
                });

@@ -1,94 +1,104 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
-    <link rel="icon" href="../images/favicon.ico">
+    <title>Education ERP System - Login</title>
 
-    <title>Education ERP System - Log in </title>
-  
-    <!-- Vendors Style-->
-    <link rel="stylesheet" href="{{ asset('backend/css/vendors_css.css') }}">
-      
-    <!-- Style-->  
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('backend/css/style.css') }}">
-    <link rel="stylesheet" href="{{ asset('backend/css/skin_color.css') }}">   
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
 
+        .login-container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .form-control {
+            border-radius: 30px;
+        }
+
+        .btn-custom {
+            background-color: #667eea;
+            color: white;
+            border-radius: 30px;
+            transition: 0.3s;
+        }
+
+        .btn-custom:hover {
+            background-color: #5a67d8;
+        }
+
+        .forgot-password {
+            font-size: 14px;
+            text-decoration: none;
+            color: #667eea;
+        }
+
+        .forgot-password:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
-<body class="hold-transition theme-primary bg-gradient-primary">
-    
-    <div class="container h-p100">
-        <div class="row align-items-center justify-content-md-center h-p100">   
-            
-            <div class="col-12">
-                <div class="row justify-content-center no-gutters">
-                    <div class="col-lg-4 col-md-5 col-12">
 
-                        <div class="p-30 box-shadowed b-2 b-solid">
-                        <div class="d-flex align-items-center justify-content-center text-white">					 	
-                      <img src="{{asset('backend/images/logo-dark.png')}}" alt="">
-                      <h3>Education <b>ERP</b></h3>
-                    </div>
-                        <div class="content-top-agile p-10">
-                            <h2 class="text-white">Welcome Staff Member</h2>
-                            <p class="text-white-50">Sign in to get started</p>                          
-                        </div>
-     <form method="POST" action="{{ route('login') }}">
+<body>
+
+    <div class="login-container">
+        <div class="text-center mb-4">
+            <img src="{{ asset('backend/images/logo-dark.png') }}" alt="Logo" width="50">
+            <h3 class="mt-2"><b>Education ERP</b></h3>
+        </div>
+
+        <h4 class="text-center mb-3">Welcome Back</h4>
+
+        <form method="POST" action="{{ route('login') }}">
             @csrf
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-person"></i></span>
+                    <input type="email" id="email" name="email" class="form-control" placeholder="Enter your email">
+                </div>
+            </div>
 
-        <div class="form-group">
-            <div class="input-group mb-3">
-                <div class="input-group-prepend">
-                    <span class="input-group-text bg-transparent text-white"><i class="ti-user"></i></span>
-                </div>
-       <input type="email" id="email" name="email" class="form-control pl-15 bg-transparent text-white plc-white" placeholder="Username">
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="input-group mb-3">
-                <div class="input-group-prepend">
-                    <span class="input-group-text  bg-transparent text-white"><i class="ti-lock"></i></span>
-                </div>
-  <input type="password" id="password" name="password" class="form-control pl-15 bg-transparent text-white plc-white" placeholder="Password">
-            </div>
-        </div>
-          <div class="row">
-            <div class="col-6">
-              <div class="checkbox text-white">
-                <input type="checkbox" id="basic_checkbox_1" >
-                <label for="basic_checkbox_1">Remember Me</label>
-              </div>
-            </div>
-            <!-- /.col -->
-            <div class="col-6">
-             <div class="fog-pwd text-right">
-                <a href="{{ route('password.request') }}" class="text-white hover-info"><i class="ion ion-locked"></i> Forgot Password?</a><br>
-              </div>
-            </div>
-            <!-- /.col -->
-            <div class="col-12 text-center">
-              <button type="submit" class="btn btn-info mt-10">Sign In</button>
-            </div>
-            <!-- /.col -->
-          </div>
-    </form>                                                         
-    <div class="text-center">
-        <p class="mt-15 mb-0 text-white">Don't have an account? <a href="{{ route('register') }}" class="text-info ml-5">Sign Up</a></p>
-                            </div>
-                        </div>
-                    </div>
+            <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                    <input type="password" id="password" name="password" class="form-control"
+                        placeholder="Enter password">
                 </div>
             </div>
-        </div>
+
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <input type="checkbox" id="remember">
+                    <label for="remember">Remember Me</label>
+                </div>
+                <a href="{{ route('password.request') }}" class="forgot-password">Forgot Password?</a>
+            </div>
+
+            <button type="submit" class="btn btn-custom w-100">Login</button>
+
+            <p class="text-center mt-3">Don't have an account? <a href="{{ route('register') }}"
+                    class="forgot-password">Sign Up</a></p>
+        </form>
     </div>
 
-
-    <!-- Vendor JS -->
-    <script src="{{ asset('backend/js/vendors.min.js') }}"></script>
-    <script src="{{ asset('../assets/icons/feather-icons/feather.min.js') }}"></script>    
-
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>

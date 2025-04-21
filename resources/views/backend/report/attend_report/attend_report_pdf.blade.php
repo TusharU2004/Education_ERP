@@ -1,84 +1,167 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-<style>
-#customers {
-  font-family: Arial, Helvetica, sans-serif;
-  border-collapse: collapse;
-  width: 100%;
-}
+    <title>Employee Attendance Report</title>
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
 
-#customers td, #customers th {
-  border: 1px solid #ddd;
-  padding: 8px;
-}
+        .container {
+            width: 100%;
+            max-width: 900px;
+            margin: auto;
+            text-align: center;
+        }
 
-#customers tr:nth-child(even){background-color: #f2f2f2;}
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #000;
+            padding-bottom: 10px;
+        }
 
-#customers tr:hover {background-color: #ddd;}
+        .header img {
+            width: 80px;
+            height: auto;
+        }
 
-#customers th {
-  padding-top: 12px;
-  padding-bottom: 12px;
-  text-align: left;
-  background-color: #4CAF50;
-  color: white;
-}
-</style>
+        .header-text {
+            text-align: center;
+        }
+
+        .header h2 {
+            margin: 5px 0;
+        }
+
+        .header p {
+            margin: 3px 0;
+        }
+
+        .report-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        #customers {
+            font-family: Arial, Helvetica, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        #customers th,
+        #customers td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+
+        #customers th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        #customers tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        #customers tr:hover {
+            background-color: #ddd;
+        }
+
+        .footer {
+            margin-top: 20px;
+            font-size: 12px;
+            text-align: right;
+        }
+
+        hr {
+            border: dashed 2px;
+            width: 95%;
+            color: #000;
+            margin-bottom: 50px;
+        }
+    </style>
 </head>
+
 <body>
 
+    <div class="container">
+        <div class="header">
+            <img src="{{ public_path('upload/easyschool.png') }}" alt="School Logo" height="100px">
+            <div class="header-text">
+                <h2>Easy School ERP</h2>
+                <p><strong>Address:</strong> Near Mavdi Chock, Rajkot</p>
+                <p><strong>Phone:</strong> 7043169204 | <strong>Email:</strong> support@learning.com</p>
+            </div>
+        </div>
 
-<table id="customers">
-  <tr>
-    <td><h2>
-  <?php $image_path = '/upload/easyschool.png'; ?>
-  <img src="{{ public_path() . $image_path }}" width="200" height="100">
+        @php
+            $totalDays = cal_days_in_month(CAL_GREGORIAN, date('m', strtotime($month)), date('Y', strtotime($month)));
+        @endphp
 
-    </h2></td>
-    <td><h2>School Name</h2>
-<p>School Address</p>
-<p>Phone : 0911234567</p>
-<p>Email : support@schoolname.com</p>
-<p> <b>Employee Attendance Report </b> </p>
+        <h4 class="report-title">Employee Attendance Report - {{ $month }}</h4>
 
-    </td> 
-  </tr>
-  
-   
-</table>
- <br> <br>
- <strong>Employee Name : </strong> {{ $allData['0']['user']['name'] }}, <strong> ID No : </strong>{{ $allData['0']['user']['id_no'] }}, <strong> Month : </strong> {{ $month }}
- <br> <br>
-<table id="customers">
-   
-  <tr>    
-    <td width="50%"> <h4>Date</h4></td>
-    <td width="50%"> <h4> Attend Status </h4> </td>
-  </tr>
+        <!-- Attendance Table -->
+        <table id="customers">
+            <tr>
+                <th>Employee Name</th>
+                @for($day = 1; $day <= $totalDays; $day++)
+                    @php
+                        $date = date('Y-m-d', strtotime("$month-$day"));
+                    @endphp
+                    <th>{{ $day }}</th>
+                @endfor
+                <th>Total Present</th>
+                <th>Total Absent</th>
+            </tr>
 
-@foreach($allData as $value)
-  <tr>    
-    <td width="50%"> {{ date('d-m-Y', strtotime($value->date )) }}  </td>
-    <td width="50%"> {{ $value->attend_status }} </td>
-  </tr>
-  @endforeach
-   
-  <tr>
-    <td colspan="2">
-      <strong>Total Absent : </strong> {{ $absents }} , <strong> Total Leave : </strong> {{ $leaves }}
+            @foreach($employeeAttendanceData as $emp)
+                @php
+                    $presentCount = 0;
+                    $absentCount = 0;
+                @endphp
+                <tr>
+                    <td>{{ $emp['employee']->lname }} {{ $emp['employee']->name }}</td>
+                    @for($day = 1; $day <= $totalDays; $day++)
+                        @php
+                            $date = date('Y-m-d', strtotime("$month-$day"));
+                            $isSunday = date('N', strtotime($date)) == 7;
+                            $status = $emp['attendance'][$day] ?? '-';
 
-    </td>
-  </tr>  
-   
-</table>
-<br> <br>
-  <i style="font-size: 10px; float: right;">Print Data : {{ date("d M Y") }}</i>
+                            if ($isSunday && !isset($emp['attendance'][$day])) {
+                                $status = 'H';
+                            }
 
-<hr style="border: dashed 2px; width: 95%; color: #000000; margin-bottom: 50px">
+                            if ($status === 'P') {
+                                $presentCount++;
+                            } elseif ($status === 'A') {
+                                $absentCount++;
+                            }
+                        @endphp
+                        <td>{{ $status }}</td>
+                    @endfor
+                    <td><strong>{{ $presentCount }}</strong></td>
+                    <td><strong>{{ $absentCount }}</strong></td>
+                </tr>
+            @endforeach
+        </table>
 
- 
- 
+        <div class="footer">
+            <i>Print Date: {{ date("d M Y") }}</i>
+        </div>
+
+        <hr>
+
+    </div>
 
 </body>
+
 </html>

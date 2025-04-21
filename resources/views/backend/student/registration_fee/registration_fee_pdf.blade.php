@@ -1,191 +1,107 @@
 <!DOCTYPE html>
 <html>
 <head>
-<style>
-#customers {
-  font-family: Arial, Helvetica, sans-serif;
-  border-collapse: collapse;
-  width: 100%;
-}
-
-#customers td, #customers th {
-  border: 1px solid #ddd;
-  padding: 8px;
-}
-
-#customers tr:nth-child(even){background-color: #f2f2f2;}
-
-#customers tr:hover {background-color: #ddd;}
-
-#customers th {
-  padding-top: 12px;
-  padding-bottom: 12px;
-  text-align: left;
-  background-color: #4CAF50;
-  color: white;
-}
-</style>
+   <style>
+      body { 
+         font-family: Arial, Helvetica, sans-serif; 
+         margin: 0;
+         padding: 0;
+      }
+      .receipt-container { 
+         width: 600px; 
+         margin: 0 auto; 
+         border: 1px solid #ddd; 
+         padding: 20px;
+      }
+      .header { 
+         display: flex; 
+         align-items: center; 
+      }
+      .header img { 
+         width: 200px; 
+         height: 100px; 
+         margin-right: 20px;
+      }
+      .header h2 { 
+         margin: 0; 
+      }
+      .details-table { 
+         width: 600px; 
+         border-collapse: collapse; 
+         margin-top: 20px; 
+      }
+      .details-table th, 
+      .details-table td { 
+         border: 1px solid #ddd; 
+         padding: 8px; 
+         width: 300px; /* Fixed column width for a two-column table */
+      }
+      .details-table th { 
+         background-color: #4CAF50; 
+         color: white; 
+         text-align: left; 
+      }
+      .footer { 
+         text-align: center; 
+         margin-top: 20px; 
+         font-size: 14px; 
+      }
+   </style>
+   <title>{{ $details->student->id_no }}_registration_fee</title>
 </head>
 <body>
+<div class="receipt-container">
+   <div class="header">
+      <div>
+         <img src="{{ public_path() . '/upload/easyschool.png' }}" width="400px" alt="School Logo">
+      </div>
+      <div>
+         <h2>Easy School ERP</h2>
+         <p>School Address :- Near Mavdi Chock, Rajkot</p>
+         <p>Phone: 7043169204</p>
+         <p>Email: support@learning.com</p>
+      </div>
+   </div>
+   <hr>
+   <h3 style="text-align: center;">Registration Fee Payment Receipt</h3>
+   <table class="details-table">
+      <tr>
+         <th>Student Details</th>
+         <th>Information</th>
+      </tr>
+      <tr>
+         <td><b>Student ID No</b></td>
+         <td>{{ $details->student->id_no }}</td>
+      </tr>
+      <tr>
+         <td><b>Roll No</b></td>
+         <td>{{ $details->roll }}</td>
+      </tr>
+      <tr>
+         <td><b>Student Full Name</b></td>
+         <td>{{ $details->student->lname }} {{ $details->student->name }} {{ $details->student->fname }}</td>
+      </tr>
+      <tr>
+         <td><b>Session</b></td>
+         <td>{{ $details->student_year->name }}</td>
+      </tr>
+      <tr>
+         <td><b>Class</b></td>
+         <td>{{ $details->student_class->name }}</td>
+      </tr>
+      <tr>
+         <td><b>Fee Paid</b></td>
+         <td>{{ $finalfee }} ₹</td>
+      </tr>
+      <tr>
+         <td><b>Payment Date</b></td>
+         <td>{{ $details->payment_date }}</td>
+      </tr>
+   </table>
+   <div class="footer">
+      <p>Print Date: {{ date("d M Y") }}</p>
+   </div>
 
-
-<table id="customers">
-  <tr>
-    <td><h2>
-  <?php $image_path = '/upload/easyschool.png'; ?>
-  <img src="{{ public_path() . $image_path }}" width="200" height="100">
-
-    </h2></td>
-    <td><h2>Easy School ERP</h2>
-<p>School Address</p>
-<p>Phone : 343434343434</p>
-<p>Email : support@easylerningbd.com</p>
-<p> <b> Student Registration Fee</b> </p>
-
-    </td> 
-  </tr>
-  
-   
-</table>
-
-@php 
-$registrationfee = App\Models\FeeCategoryAmount::where('fee_category_id','1')->where('class_id',$details->class_id)->first();
-$originalfee = $registrationfee->amount;
-        $discount = $details['discount']['discount'];
-        $discounttablefee = $discount/100*$originalfee;
-        $finalfee = (float)$originalfee-(float)$discounttablefee;
-
-@endphp 
-
-<table id="customers">
-  <tr>
-    <th width="10%">Sl</th>
-    <th width="45%">Student Details</th>
-    <th width="45%">Student Data</th>
-  </tr>
-  <tr>
-    <td>1</td>
-    <td><b>Student ID No</b></td>
-    <td>{{ $details['student']['id_no'] }}</td>
-  </tr>
-  <tr>
-    <td>2</td>
-    <td><b>Roll No</b></td>
-    <td>{{ $details->roll }}</td>
-  </tr>
-
-    <tr>
-    <td>3</td>
-    <td><b>Student Name</b></td>
-    <td>{{ $details['student']['name'] }}</td>
-  </tr>
-
-  <tr>
-    <td>4</td>
-    <td><b>Father's Name</b></td>
-    <td>{{ $details['student']['fname'] }}</td>
-  </tr>
-  <tr>
-    <td>5</td>
-    <td><b>Session</b></td>
-    <td>{{ $details['student_year']['name'] }}</td>
-  </tr>
-  <tr>
-    <td>6</td>
-    <td><b>Class </b></td>
-    <td>{{ $details['student_class']['name'] }}</td>
-  </tr>
-  <tr>
-    <td>7</td>
-    <td><b>Registration Fee</b></td>
-    <td>{{ $originalfee }} $</td>
-  </tr>
-  <tr>
-    <td>8</td>
-    <td><b>Discount Fee </b></td>
-    <td>{{ $discount  }} %</td>
-  </tr>
-
-    <tr>
-    <td>9</td>
-    <td><b>Fee For this Student </b></td>
-    <td>{{ $finalfee }} $</td>
-  </tr>
- 
-    
-   
-</table>
-<br> <br>
-  <i style="font-size: 10px; float: right;">Print Data : {{ date("d M Y") }}</i>
-
-<hr style="border: dashed 2px; width: 95%; color: #000000; margin-bottom: 50px">
-
-<table id="customers">
-  <tr>
-    <th width="10%">Sl</th>
-    <th width="45%">Student Details</th>
-    <th width="45%">Student Data</th>
-  </tr>
-  <tr>
-    <td>1</td>
-    <td><b>Student ID No</b></td>
-    <td>{{ $details['student']['id_no'] }}</td>
-  </tr>
-  <tr>
-    <td>2</td>
-    <td><b>Roll No</b></td>
-    <td>{{ $details->roll }}</td>
-  </tr>
-
-    <tr>
-    <td>3</td>
-    <td><b>Student Name</b></td>
-    <td>{{ $details['student']['name'] }}</td>
-  </tr>
-
-  <tr>
-    <td>4</td>
-    <td><b>Father's Name</b></td>
-    <td>{{ $details['student']['fname'] }}</td>
-  </tr>
-  <tr>
-    <td>5</td>
-    <td><b>Session</b></td>
-    <td>{{ $details['student_year']['name'] }}</td>
-  </tr>
-  <tr>
-    <td>6</td>
-    <td><b>Class </b></td>
-    <td>{{ $details['student_class']['name'] }}</td>
-  </tr>
-  <tr>
-    <td>7</td>
-    <td><b>Registration Fee</b></td>
-    <td>{{ $originalfee }} $</td>
-  </tr>
-  <tr>
-    <td>8</td>
-    <td><b>Discount Fee </b></td>
-    <td>{{ $discount  }} %</td>
-  </tr>
-
-    <tr>
-    <td>9</td>
-    <td><b>Fee For this Student </b></td>
-    <td>{{ $finalfee }} $</td>
-  </tr>
- 
-    
-   
-</table>
-<br> <br>
-  <i style="font-size: 10px; float: right;">Print Data : {{ date("d M Y") }}</i>
-
-
-
-
-
-
-
+</div>
 </body>
 </html>

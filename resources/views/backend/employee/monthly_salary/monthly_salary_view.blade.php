@@ -1,121 +1,98 @@
 @extends('admin.admin_master')
 @section('admin')
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.6/handlebars.min.js"></script>
 
- <div class="content-wrapper">
-	  <div class="container-full">
-		<!-- Content Header (Page header) -->
-		 
+   <div class="content-wrapper">
+      <div class="container-full">
 
-		<!-- Main content -->
-		<section class="content">
-		  <div class="row">
+         <section class="content">
 
-		
-<div class="col-12">
-<div class="box bb-3 border-warning">
-				  <div class="box-header">
-					<h4 class="box-title">Employee <strong>Monthly Salary</strong></h4>
-				  </div>
+            <div class="box bb-3 border-warning">
+               <div class="box-header">
+                  <h4 class="box-title">Employee <strong>Monthly Salary</strong></h4>
+               </div>
 
-				  <div class="box-body">
-				
-	 
-			<div class="row">
+               <div class="box-body">
 
+                  <form action="{{ route('employee.monthly.salary') }}">
+                     <div class="row">
+                        <div class="col-md-3">
+                           <div class="form-group">
+                              <h5>Select Salary Month<span class="text-danger">*</span></h5>
+                              <select name="month" class="form-control">
+                                 <option value="" selected disabled>Select Month</option>
+                                 @foreach(range(1, 12) as $month)
+                                    <option value="{{ $month }}">{{ date('F', mktime(0, 0, 0, $month, 1)) }}</option>
+                                 @endforeach
+                              </select>
+                           </div>
+                        </div>
+                        
+                        <div class="col-md-6" style="padding-top: 25px;">
+                           <input type="submit" class="btn btn-rounded btn-dark mb-5">
+                        </div>
+                     </div>
+                  </form>
 
-
-<div class="col-md-6">
-
- 		<div class="form-group">
-		<h5>Attendance Date <span class="text-danger">*</span></h5>
-		<div class="controls">
-	 <input type="date" name="date" id="date" class="form-control" > 
-	  </div>
-		 
-	</div>
-	  
- 			</div> <!-- End Col md 6 --> 
-			
- 		 
-
-
- 			<div class="col-md-6" style="padding-top: 25px;">
-
-  <a id="search" class="btn btn-primary" name="search"> Search</a>
-	  
- 			</div> <!-- End Col md 6 --> 		
-			</div><!--  end row --> 
-
-
- <!--  ////////////////// Registration Fee table /////////////  -->
-
-
- <div class="row">
- 	<div class="col-md-12">
- 		<div id="DocumentResults">
-
- 	<script id="document-template" type="text/x-handlebars-template">
-
- 	<table class="table table-bordered table-striped" style="width: 100%">
- 	<thead>
- 		<tr>
-        @{{{thsource}}}
- 		</tr>
- 	 </thead>
- 	 <tbody>
- 	 	@{{#each this}}
- 	 	<tr>
- 	 		@{{{tdsource}}}	
- 	 	</tr>
- 	 	@{{/each}}
- 	 </tbody>
- 	</table>
-    </script>
-
-    
- 			
- 		</div> 		
- 	</div>
- 	
- </div>
- 
-
-
-			       
-			</div>
-			<!-- /.col -->
-		  </div>
-		  <!-- /.row -->
-		</section>
-		<!-- /.content -->
-	  
-	  </div>
-  </div>
-
-
-<script type="text/javascript">
-  $(document).on('click','#search',function(){
-    var date = $('#date').val();   
-     $.ajax({
-      url: "{{ route('employee.monthly.salary.get')}}",
-      type: "get",
-      data: {'date':date},
-      beforeSend: function() {       
-      },
-      success: function (data) {
-        var source = $("#document-template").html();
-        var template = Handlebars.compile(source);
-        var html = template(data);
-        $('#DocumentResults').html(html);
-        $('[data-toggle="tooltip"]').tooltip();
-      }
-    });
-  });
-
-</script>
-
-
+                  @if (!empty($EmployeeData))
+                     <div class="table-responsive">
+                        <table id="example1" class="table table-bordered table-striped">
+                           <thead>
+                              <tr>
+                                 <th>SL</th>
+                                 <th>ID</th>
+                                 <th>Name</th>
+                                 <th>Salary</th>
+                                 <th>Total Working Days</th>
+                                 <th>Present Days</th>
+                                 <th>This month Salary</th>
+                                 <th>Payment Date</th>
+                                 <th>Status</th>
+                              </tr>
+                           </thead>
+                           <tbody>
+                              @foreach ($EmployeeData as $employee)
+                                 <tr>
+                                    <input type="hidden" name="month" value="{{ $employee['salary_month'] }}">
+                                    <td>{{ $loop->iteration }}</td>
+                                    <td>{{ $employee['id_no'] }}</td>
+                                    <td>{{ $employee['lname'] }} {{ $employee['name'] }}</td>
+                                    <td>{{ $employee['salary'] }}</td>
+                                    <td>{{ $employee['total_working_days'] }}</td>
+                                    <td>{{ $employee['present_days'] }}</td>
+                                    <td>
+                                       @if (!empty($employee['paid_amount']))
+                                          {{ $employee['paid_amount'] }}
+                                       @else
+                                          {{ $employee['total_salary'] }}
+                                       @endif
+                                    </td>
+                                    <td>
+                                       @if ($employee['paid'])
+                                          <span class="badge badge-info">{{ $employee['paid_date'] }}</span>
+                                       @else
+                                          <span class="badge badge-danger">NOT PAID</span>
+                                       @endif
+                                    </td>
+                                    <td>
+                                       @if ($employee['paid'])
+                                          <a class="btn btn-sm btn-primary" title="PaySlip" target="_blank"
+                                          href="{{ route('employee.monthly.salary.payslip', ['employee_id' => $employee['id'],'month' => $employee['salary_month']])}}">
+                                          Print Receipt
+                                          </a>
+                                       @else
+                                          <span class="badge badge-danger">Not Paid</span>
+                                       @endif
+                                    </td>
+                                 </tr>
+                              @endforeach
+                           </tbody>
+                        </table>
+                     </div>
+                  @endif
+               </div>
+            </div>
+         </section>
+      </div>
+   </div>
 
 @endsection

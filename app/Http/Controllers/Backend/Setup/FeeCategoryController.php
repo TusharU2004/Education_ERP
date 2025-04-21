@@ -4,87 +4,103 @@ namespace App\Http\Controllers\Backend\Setup;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\FeeCategory; 
+use App\Models\FeeCategory;
 
 class FeeCategoryController extends Controller
 {
-    public function ViewFeeCat(){
-    	$data['allData'] = FeeCategory::all();
-    	return view('backend.setup.fee_category.view_fee_cat',$data);
- 
+
+    public function __construct()
+    {
+        $this->middleware('permission:Manage Fee Category')->only([
+            'ViewFeeCat',
+            'FeeCatAdd',
+            'FeeCatStore',
+            'FeeCatEdit',
+            'FeeCategoryUpdate',
+            'FeeCategoryDelete'
+        ]);
+    }
+    public function ViewFeeCat()
+    {
+        $allData = FeeCategory::all();
+        return view('backend.setup.fee_category.view_fee_cat',  compact('allData'));
     }
 
 
-    public function FeeCatAdd(){
-    	return view('backend.setup.fee_category.add_fee_cat');
+
+    public function FeeCatAdd()
+    {
+        return view('backend.setup.fee_category.add_fee_cat');
     }
 
 
-public function FeeCatStore(Request $request){
 
-	    	$validatedData = $request->validate([
-	    		'name' => 'required|unique:fee_categories,name',
-	    		
-	    	]);
+    public function FeeCatStore(Request $request)
+    {
 
-	    	$data = new FeeCategory();
-	    	$data->name = $request->name;
-	    	$data->save();
+        $request->validate([
+            'name' => 'required|unique:fee_categories,name',
+        ]);
 
-	    	$notification = array(
-	    		'message' => 'Fee Category Inserted Successfully',
-	    		'alert-type' => 'success'
-	    	);
+        $data = new FeeCategory();
+        $data->name = $request->name;
+        $data->save();
 
-	    	return redirect()->route('fee.category.view')->with($notification);
+        $notification = array(
+            'message' => 'Fee Category Inserted Successfully',
+            'alert-type' => 'success'
+        );
 
-	    }
+        return redirect()->route('fee.category.view')->with($notification);
 
-
-
-	 public function FeeCatEdit($id){
-	    	$editData = FeeCategory::find($id);
-	    	return view('backend.setup.fee_category.edit_fee_cat',compact('editData'));
-
-	    }
-
-
-
-	 public function FeeCategoryUpdate(Request $request,$id){
-
-	 $data = FeeCategory::find($id);
-     
-     $validatedData = $request->validate([
-    		'name' => 'required|unique:fee_categories,name,'.$data->id
-    		
-    	]);
-
-    	
-    	$data->name = $request->name;
-    	$data->save();
-
-    	$notification = array(
-    		'message' => 'Fee Category Updated Successfully',
-    		'alert-type' => 'success'
-    	);
-
-    	return redirect()->route('fee.category.view')->with($notification);
     }
 
 
- public function FeeCategoryDelete($id){
-	    	$user = FeeCategory::find($id);
-	    	$user->delete();
 
-	    	$notification = array(
-	    		'message' => 'Fee Category Deleted Successfully',
-	    		'alert-type' => 'info'
-	    	);
+    public function FeeCatEdit($id)
+    {
+        $editData = FeeCategory::find($id);
+        return view('backend.setup.fee_category.edit_fee_cat', compact('editData'));
 
-	    	return redirect()->route('fee.category.view')->with($notification);
-
-	    }
+    }
 
 
+
+    public function FeeCategoryUpdate(Request $request, $id)
+    {
+
+        $data = FeeCategory::find($id);
+
+        $request->validate([
+            'name' => 'required|unique:fee_categories,name,' . $data->id
+
+        ]);
+
+        $data->name = $request->name;
+        $data->save();
+
+        $notification = array(
+            'message' => 'Fee Category Updated Successfully',
+            'alert-type' => 'success'
+        );
+
+        return redirect()->route('fee.category.view')->with($notification);
+    }
+
+
+
+    public function FeeCategoryDelete($id)
+    {
+        $feecat = FeeCategory::find($id);
+        $feecat->delete();
+
+        $notification = array(
+            'message' => 'Fee Category Deleted Successfully',
+            'alert-type' => 'info'
+        );
+
+        return redirect()->route('fee.category.view')->with($notification);
+
+    }
 
 }

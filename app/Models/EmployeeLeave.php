@@ -7,13 +7,21 @@ use Illuminate\Database\Eloquent\Model;
 
 class EmployeeLeave extends Model
 {
-    public function user(){
-    	return $this->belongsTo(User::class,'employee_id','id');
-    }
+    protected $fillable = [
+        'employee_id',
+        'reason',
+        'start_date',
+        'end_date'
+    ];
 
-     public function purpose(){
-    	return $this->belongsTo(LeavePurpose::class,'leave_purpose_id','id');
-    }
-
+    protected $hidden = [
+        'created_at',
+        'updated_at'
+    ];
     
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'employee_id', 'id');
+    }
+
 }

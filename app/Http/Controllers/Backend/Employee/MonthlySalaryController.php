@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Backend\Employee;
 
 use App\Http\Controllers\Controller;
+use App\Models\AccountEmployeeSalary;
 use Illuminate\Http\Request;
 use App\Models\AssignStudent;
 use App\Models\User;
@@ -22,71 +23,85 @@ use App\Models\EmployeeAttendance;
 
 class MonthlySalaryController extends Controller
 {
-    public function MonthlySalaryView(){
-    	return view('backend.employee.monthly_salary.monthly_salary_view');
 
+    public function __construct()
+    {
+        $this->middleware('permission:Manage Employee Montly Salary');
+    }
+    public function MonthlySalaryView(Request $request)
+    {
+        $month = $request->month;
+        if (!empty($month)) {
+            $month = $request->month ?? date('m');
+
+            $employees = User::where('usertype', 'employee')
+                ->whereMonth('join_date', '<=', $month)
+                ->get();
+            $EmployeeData = [];
+
+            foreach ($employees as $employee) {
+                $total_working_days = EmployeeAttendance::whereMonth('date', $month)
+                    ->where('employee_id', $employee->id)
+                    ->count();
+
+                $totalattend = EmployeeAttendance::whereMonth('date', $month)
+                    ->where('employee_id', $employee->id)
+                    ->get();
+
+                $presentcount = count($totalattend->where('attend_status', 'Present'));
+                $absentcount = count($totalattend->where('attend_status', 'Absent'));
+                $totalwork = $presentcount + $absentcount;
+
+                $salary = (float) $employee->salary;
+
+                if ($totalwork == 0) {
+                    $totalsalary = $salary;
+                } else {
+                    $salaryperday = $salary / $totalwork;
+                    $totalsalaryminus = $absentcount * $salaryperday;
+                    $totalsalary = $salary - $totalsalaryminus;
+                }
+
+                $salaryPayment = DB::table('account_employee_salaries')
+                    ->where('employee_id', $employee->id)
+                    ->whereMonth('date', $month)
+                    ->first();
+
+                $EmployeeData[] = [
+                    'id' => $employee->id,
+                    'id_no' => $employee->id_no,
+                    'name' => $employee->name,
+                    'lname' => $employee->lname,
+                    'salary' => $salary,
+                    'total_working_days' => $totalwork,
+                    'present_days' => $presentcount,
+                    'total_salary' => round($totalsalary),
+                    'paid' => $salaryPayment ? true : false,
+                    'paid_date' => $salaryPayment ? $salaryPayment->date : null,
+                    'paid_amount' => $salaryPayment ? $salaryPayment->amount : null,
+                    'salary_month' => $month
+                ];
+
+            }
+            return view('backend.employee.monthly_salary.monthly_salary_view', compact('EmployeeData', 'month'));
+        }
+        return view('backend.employee.monthly_salary.monthly_salary_view');
     }
 
 
-  public function MonthlySalaryGet(Request $request){
-		
-	 	$date = date('Y-m',strtotime($request->date));
-    	 if ($date !='') {
-    	 	$where[] = ['date','like',$date.'%'];
-    	 }
-    	 
-    	 $data = EmployeeAttendance::select('employee_id')->groupBy('employee_id')->with(['user'])->where($where)->get();
-    	 // dd($allStudent);
-    	 $html['thsource']  = '<th>SL</th>';
-    	 $html['thsource'] .= '<th>Employee Name</th>';
-    	 $html['thsource'] .= '<th>Basic Salary</th>';
-    	 $html['thsource'] .= '<th>Salary This Month</th>';
-    	 $html['thsource'] .= '<th>Action</th>';
+    public function MonthlySalaryPayslip($employee_id, $month)
+    {
+        $data['details'] = AccountEmployeeSalary::with('user')
+            ->where('employee_id', $employee_id)
+            ->whereMonth('date', $month)
+            ->first();
 
+        if (!$data['details']) {
+            return redirect()->back()->with('error', 'Salary record not found.');
+        }
 
-    	 foreach ($data as $key => $attend) {
-    	 	$totalattend = EmployeeAttendance::with(['user'])->where($where)->where('employee_id',$attend->employee_id)->get();
-    	 	$absentcount = count($totalattend->where('attend_status','Absent'));
-
-    	 	$color = 'success';
-    	 	$html[$key]['tdsource']  = '<td>'.($key+1).'</td>';
-    	 	$html[$key]['tdsource'] .= '<td>'.$attend['user']['name'].'</td>';
-    	 	$html[$key]['tdsource'] .= '<td>'.$attend['user']['salary'].'</td>';
-    	 	 
-    	 	
-    	 	$salary = (float)$attend['user']['salary'];
-    	 	$salaryperday = (float)$salary/30;
-    	 	$totalsalaryminus = (float)$absentcount*(float)$salaryperday;
-    	 	$totalsalary = (float)$salary-(float)$totalsalaryminus;
-
-    	 	$html[$key]['tdsource'] .='<td>'.$totalsalary.'$'.'</td>';
-    	 	$html[$key]['tdsource'] .='<td>';
-    	 	$html[$key]['tdsource'] .='<a class="btn btn-sm btn-'.$color.'" title="PaySlip" target="_blanks" href="'.route("employee.monthly.salary.payslip",$attend->employee_id).'">Fee Slip</a>';
-    	 	$html[$key]['tdsource'] .= '</td>';
-
-    	 }  
-    	return response()->json(@$html);
- 
-
-  } // END Method 
-
-
-  	public function MonthlySalaryPayslip(Request $request,$employee_id){
-  		$id = EmployeeAttendance::where('employee_id',$employee_id)->first();
-  		$date = date('Y-m',strtotime($id->date));
-    	 if ($date !='') {
-    	 	$where[] = ['date','like',$date.'%'];
-    	 }
-
-    $data['details'] = EmployeeAttendance::with(['user'])->where($where)->where('employee_id',$id->employee_id)->get();	 
-
-    $pdf = PDF::loadView('backend.employee.monthly_salary.monthly_salary_pdf', $data);
-	$pdf->SetProtection(['copy', 'print'], '', 'pass');
-	return $pdf->stream('document.pdf');
-
-  	}
-
-
+        $pdf = PDF::loadView('backend.employee.monthly_salary.monthly_salary_pdf', $data);
+        return $pdf->stream('salary_receipt.pdf');
+    }
 
 }
- 

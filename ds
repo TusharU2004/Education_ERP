@@ -1,0 +1,7 @@
+[33m961ed4a[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m HEAD@{0}: commit: Restored files after line ending normalization
+[33m743957b[m HEAD@{1}: reset: moving to HEAD
+[33m743957b[m HEAD@{2}: rebase (finish): returning to refs/heads/main
+[33m743957b[m HEAD@{3}: rebase (continue): Initial commit
+[33mdc9d073[m HEAD@{4}: pull origin main --rebase (start): checkout dc9d07320c144fb7d964af179d41b81432d1da02
+[33m1d05912[m HEAD@{5}: Branch: renamed refs/heads/master to refs/heads/main
+[33m1d05912[m HEAD@{7}: commit (initial): Initial commit

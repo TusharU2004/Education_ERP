@@ -1,151 +1,126 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-<style>
-#customers {
-  font-family: Arial, Helvetica, sans-serif;
-  border-collapse: collapse;
-  width: 100%;
-}
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Salary Receipt</title>
+   <style>
+      body {
+         font-family: Arial, sans-serif;
+         margin: 10px;
+         padding: 10px;
+      }
 
-#customers td, #customers th {
-  border: 1px solid #ddd;
-  padding: 8px;
-}
+      .container {
+         width: 100%;
+         max-width: 800px;
+         margin: auto;
+         padding: 10px;
+         border: 1px solid #ddd;
+      }
 
-#customers tr:nth-child(even){background-color: #f2f2f2;}
+      .header {
+         display: flex;
+         justify-content: space-between;
+         align-items: center;
+      }
 
-#customers tr:hover {background-color: #ddd;}
+      .header img {
+         width: 40px;
+      }
 
-#customers th {
-  padding-top: 12px;
-  padding-bottom: 12px;
-  text-align: left;
-  background-color: #4CAF50;
-  color: white;
-}
-</style>
+      .title {
+         text-align: center;
+         font-size: 22px;
+         font-weight: bold;
+      }
+
+      .section {
+         margin-top: 20px;
+         padding: 10px;
+         border: 1px solid #ddd;
+      }
+
+      .section h5 {
+         margin-bottom: 7px;
+         font-size: 18px;
+      }
+
+      .section p {
+         margin: 5px 0;
+         font-size: 16px;
+      }
+
+      .total {
+         text-align: center;
+         font-size: 20px;
+         font-weight: bold;
+         margin-top: 15px;
+      }
+
+      .signature {
+         text-align: right;
+         margin-top: 15px;
+         margin-left: 10px;
+      }
+
+      .signature p {
+         font-size: 16px;
+         margin-bottom: 20px;
+      }
+   </style>
 </head>
+
 <body>
 
+   <div class="container">
 
-<table id="customers">
-  <tr>
-    <td><h2>
-  <?php $image_path = '/upload/easyschool.png'; ?>
-  <img src="{{ public_path() . $image_path }}" width="200" height="100">
+      <div class="header">
+         <div>
+            <img src="{{ public_path() . '/upload/easyschool.png' }}" width="300px" alt="School Logo">
+         </div>
+         <div>
+            <h2>Easy School ERP</h2>
+            <p>School Address :- Near Mavdi Chock, Rajkot</p>
+            <p>Phone: 7043169204</p>
+            <p>Email: support@learning.com</p>
+         </div>
+      </div>
 
-    </h2></td>
-    <td><h2>Easy School ERP</h2>
-<p>School Address</p>
-<p>Phone : 343434343434</p>
-<p>Email : support@easylerningbd.com</p>
-<p> <b> Employee Monthly Salary </b> </p>
+      <hr>
 
-    </td> 
-  </tr>
-  
+      <div class="section">
+         <h5>Employee Details:</h5>
+         <p><strong>Name:</strong> {{ $details->user->lname }} {{ $details->user->name }}</p>
+         <p><strong>Employee ID:</strong> {{ $details->user->id_no }}</p>
+         <p><strong>Designation:</strong> {{ $details->user->designation->name ?? 'N/A' }}</p>
+         <p><strong>Receipt Date:</strong> {{ date('d-m-Y', strtotime($details->date)) }}</p>
+      </div>
+
+      <div class="section">
+         <h5>Payment Details:</h5>
+         <p><strong>Salary Month:</strong> {{ date('F Y', strtotime($details->date)) }}</p>
+         <p><strong>Basic Salary:</strong> ₹{{ number_format($details->user->salary, 2) }}</p>
+         <p><strong>Paid Amount:</strong> ₹{{ number_format($details->amount, 2) }}</p>
+      </div>
+
+      <div class="total">
+         <p>Total Paid: ₹{{ number_format($details->amount, 2) }}</p>
+      </div>
+
+      <div class="signature">
+         <p><strong>Authorized Signature</strong></p>
+         <p>______________________</p>
+      </div>
+
    
-</table>
-
-@php 
- 
- $date = date('Y-m',strtotime($details['0']->date));
-       if ($date !='') {
-        $where[] = ['date','like',$date.'%'];
-       }
-
-$totalattend = App\Models\EmployeeAttendance::with(['user'])->where($where)->where('employee_id',$details['0']->employee_id)->get();
-
-        $salary = (float)$details['0']['user']['salary'];
-        $salaryperday = (float)$salary/30;
-        $absentcount = count($totalattend->where('attend_status','Absent'));
-        $totalsalaryminus = (float)$absentcount*(float)$salaryperday;
-        $totalsalary = (float)$salary-(float)$totalsalaryminus;
- 
-@endphp 
-
-<table id="customers">
-  <tr>
-    <th width="10%">Sl</th>
-    <th width="45%">Employee Details</th>
-    <th width="45%">Employee Data</th>
-  </tr>
-  <tr>
-    <td>1</td>
-    <td><b>Employee Name</b></td>
-    <td>{{ $details['0']['user']['name'] }}</td>
-  </tr>
-  <tr>
-    <td>2</td>
-    <td><b>Basic Salary</b></td>
-    <td>{{ $details['0']['user']['salary'] }}</td>
-  </tr>
-
-    <tr>
-    <td>3</td>
-    <td><b>Total Absent for This Month</b></td>
-    <td>{{ $absentcount }}</td>
-  </tr>
-
-  <tr>
-    <td>4</td>
-    <td><b>Month</b></td>
-    <td>{{ date('M Y',strtotime($details['0']->date)) }}</td>
-  </tr>
-  <tr>
-    <td>5</td>
-    <td><b>Salary This Month</b></td>
-    <td>{{ $totalsalary }}</td>
-  </tr>
-    
-   
-</table>
-<br> <br>
-  <i style="font-size: 10px; float: right;">Print Data : {{ date("d M Y") }}</i>
-
-<hr style="border: dashed 2px; width: 95%; color: #000000; margin-bottom: 50px">
-
-<table id="customers">
-  <tr>
-    <th width="10%">Sl</th>
-    <th width="45%">Employee Details</th>
-    <th width="45%">Employee Data</th>
-  </tr>
-  <tr>
-    <td>1</td>
-    <td><b>Employee Name</b></td>
-    <td>{{ $details['0']['user']['name'] }}</td>
-  </tr>
-  <tr>
-    <td>2</td>
-    <td><b>Basic Salary</b></td>
-    <td>{{ $details['0']['user']['salary'] }}</td>
-  </tr>
-
-    <tr>
-    <td>3</td>
-    <td><b>Total Absent for This Month</b></td>
-    <td>{{ $absentcount }}</td>
-  </tr>
-
-  <tr>
-    <td>4</td>
-    <td><b>Month</b></td>
-    <td>{{ date('M Y',strtotime($details['0']->date)) }}</td>
-  </tr>
-  <tr>
-    <td>5</td>
-    <td><b>Salary This Month</b></td>
-    <td>{{ $totalsalary }}</td>
-  </tr>
-    
-   
-</table>
-<br> <br>
-  <i style="font-size: 10px; float: right;">Print Data : {{ date("d M Y") }}</i>
-
- 
-
+   <div class="row">
+      <div class="col-12 text-right">
+         <p><strong>Printed On:</strong> {{ date('d-m-Y') }}</p>
+      </div>
+   </div>
+</div>
 </body>
+
 </html>

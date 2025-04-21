@@ -43,7 +43,7 @@
                               </div>
 
                               <div class="col-md-2" style="padding-top: 25px;">
-                                 <input type="submit" class="btn btn-rounded btn-dark mb-5">
+                                 <input type="submit" class="btn btn-rounded btn-dark mb-5" value="Search">
                               </div>
 
                            </div>
@@ -95,7 +95,7 @@
                                        <td>{{ $student['name'] }}</td>
                                        <td>{{ $student['lname'] }}</td>
                                        <td>
-                                          <input type="radio" id="present_{{ $student['student_id'] }}" name="students[{{ $student['student_id'] }}][attend_status]" value="Present" required>
+                                          <input type="radio" id="present_{{ $student['student_id'] }}" name="students[{{ $student['student_id'] }}][attend_status]" value="Present" checked required>
                                           <label for="present_{{ $student['student_id'] }}">Present</label>
                                           <input type="radio" id="absent_{{ $student['student_id'] }}" name="students[{{ $student['student_id'] }}][attend_status]" value="Absent">
                                           <label for="absent_{{ $student['student_id'] }}">Absent</label>
@@ -105,7 +105,7 @@
                               </tbody>
                            </table>
                            <div class="col-md-2" style="padding-top: 25px;">
-                              <input type="submit" class="btn btn-rounded btn-primary mb-5" value="Submit Attendance">
+                              <input type="submit" class="btn btn-rounded btn-info mb-5" value="Submit Attendance">
                            </div>
                         </div>
                      </div>

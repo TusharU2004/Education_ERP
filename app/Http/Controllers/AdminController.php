@@ -7,14 +7,10 @@ use Auth;
 
 class AdminController extends Controller
 {
-    public function Logout(){
-    	Auth::logout();
-    	return Redirect()->route('login');
-
+    public function Logout()
+    {
+        Auth::logout();
+        return Redirect()->route('login');
     }
 
-
-
-
 }
- 

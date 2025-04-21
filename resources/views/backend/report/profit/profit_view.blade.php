@@ -1,135 +1,100 @@
 @extends('admin.admin_master')
 @section('admin')
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.6/handlebars.min.js"></script>
 
- <div class="content-wrapper">
-	  <div class="container-full">
-		<!-- Content Header (Page header) -->
-		 
+    <div class="content-wrapper">
+        <div class="container-full">
+            <section class="content">
+                <div class="box bb-3 border-warning">
+                    <div class="box-header">
+                        <h4 class="box-title">Manage <strong>Monthly/Yearly Profit</strong></h4>
+                    </div>
 
-		<!-- Main content -->
-		<section class="content">
-		  <div class="row">
+                    <div class="box-body">
+                        <form action="{{ route('monthly.profit.view') }}" method="get">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <h5>Start Date <span class="text-danger">*</span></h5>
+                                        <div class="controls">
+                                            <input type="date" name="start_date"  class="form-control" value="{{ request('start_date') }}">
+                                        </div>
+                                    </div>
+                                </div>
 
-		
-<div class="col-12">
-<div class="box bb-3 border-warning">
-				  <div class="box-header">
-	 <h4 class="box-title">Manage <strong>Monthly/Yearly Profit</strong></h4>
-				  </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <h5>End Date <span class="text-danger">*</span></h5>
+                                        <div class="controls">
+                                            <input type="date" name="end_date" class="form-control" value="{{ request('end_date') }}">
+                                        </div>
+                                    </div>
+                                </div>
 
-				  <div class="box-body">
-				
-	 
-			<div class="row">
+                                <div class="col-md-4" style="padding-top: 25px;">
+                                    <input type="submit" value="Search" class="btn btn-rounded btn-dark mb-5">
+                                </div>
+                            </div>
+                        </form>
 
+                        @if (!empty($data))
+                            <div class="chart-container mt-4" style="width: 40%; margin: auto;">
+                                <canvas id="profitPieChart"></canvas>
+                            </div>
 
+                            <div class="text-center mt-4">
+                                <h5><strong>Total Cost:</strong> {{ $data['total_cost'] }} ₹</h5>
+                                <h5><strong>Profit:</strong> {{ $data['profit'] }} ₹</h5>
 
-<div class="col-md-4">
+                                <a class="btn btn-sm btn-success mt-3" title="PDF" target="_blank"
+                                    href="{{ route('report.profit.pdf', ['start_date' => $start_date, 'end_date' => $end_date]) }}">
+                                    Download PDF
+                                </a>
+                            </div>
 
- 		<div class="form-group">
-		<h5>Start Date <span class="text-danger">*</span></h5>
-		<div class="controls">
-	 <input type="date" name="start_date" id="start_date" class="form-control" > 
-	  </div>
-		 
-	</div>
-	  
-  </div> <!-- End Col md 4 --> 
+                            <!-- Chart.js CDN -->
+                            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-
-  <div class="col-md-4">
-
- 		<div class="form-group">
-		<h5>End Date <span class="text-danger">*</span></h5>
-		<div class="controls">
-	 <input type="date" name="end_date" id="end_date" class="form-control" > 
-	  </div>
-		 
-	</div>
-	  
-  </div> <!-- End Col md 4 --> 
-			
- 		 
-
-
- 			<div class="col-md-4" style="padding-top: 25px;">
-
-  <a id="search" class="btn btn-primary" name="search"> Search</a>
-	  
- 			</div> <!-- End Col md 4 --> 		
-			</div><!--  end row --> 
-
-
- <!--  ////////////////// Registration Fee table /////////////  -->
-
-
- <div class="row">
- 	<div class="col-md-12">
- 		<div id="DocumentResults">
-
- 	<script id="document-template" type="text/x-handlebars-template">
-
- 	<table class="table table-bordered table-striped" style="width: 100%">
- 	<thead>
- 		<tr>
-        @{{{thsource}}}
- 		</tr>
- 	 </thead>
- 	 <tbody>
- 	  
- 	 	<tr>
- 	 		@{{{tdsource}}}	
- 	 	</tr>
- 	  
- 	 </tbody>
- 	</table>
-    </script>
-
-    
- 			
- 		</div> 		
- 	</div>
- 	
- </div>
- 
-
-
-			       
-			</div>
-			<!-- /.col -->
-		  </div>
-		  <!-- /.row -->
-		</section>
-		<!-- /.content -->
-	  
-	  </div>
-  </div>
-
-
-<script type="text/javascript">
-  $(document).on('click','#search',function(){
-    var start_date = $('#start_date').val(); 
-    var end_date = $('#end_date').val();  
-     $.ajax({
-      url: "{{ route('report.profit.datewais.get')}}",
-      type: "get",
-      data: {'start_date':start_date,'end_date':end_date},
-      beforeSend: function() {       
-      },
-      success: function (data) {
-        var source = $("#document-template").html();
-        var template = Handlebars.compile(source);
-        var html = template(data);
-        $('#DocumentResults').html(html);
-        $('[data-toggle="tooltip"]').tooltip();
-      }
-    });
-  });
-
-</script>
-
-
+                            <script>
+                                const ctx = document.getElementById('profitPieChart').getContext('2d');
+                                const profitChart = new Chart(ctx, {
+                                    type: 'pie',
+                                    data: {
+                                        labels: ['Student Fee', 'Other Cost', 'Employee Salary'],
+                                        datasets: [{
+                                            label: 'Amount in ₹',
+                                            data: [
+                                      {{ $data['fee'] }},
+                                      {{ $data['other_cost'] }},
+                                                {{ $data['salary'] }}
+                                            ],
+                                            backgroundColor: [
+                                                '#4CAF50', // Student Fee - Green
+                                                '#FFC107', // Other Cost - Amber
+                                                '#F44336'  // Employee Salary - Red
+                                            ],
+                                            borderColor: '#fff',
+                                            borderWidth: 1
+                                        }]
+                                    },
+                                    options: {
+                                        responsive: true,
+                                        plugins: {
+                                            title: {
+                                                display: true,
+                                                text: 'Monthly/Yearly Profit Analysis'
+                                            },
+                                            legend: {
+                                                position: 'bottom'
+                                            }
+                                        }
+                                    }
+                                });
+                            </script>
+                        @endif
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
 
 @endsection
