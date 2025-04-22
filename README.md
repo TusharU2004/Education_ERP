@@ -29,7 +29,7 @@ A powerful and modular **School ERP System** built using Laravel. This project s
 - 🧾 **Accounts Module**
   - Fee and salary management
   - Razorpay integration for payments
-  - WhatsApp API for bill notifications
+  - WhatsApp API for attendence notifications
   - Monthly reports
 
 - 📅 **Attendance & Timetable**
@@ -69,7 +69,7 @@ A powerful and modular **School ERP System** built using Laravel. This project s
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/school-erp-system.git
+git clone https://github.com/TusharU2004/Education_ERP.git
 cd school-erp-system
 
 # Install dependencies
