@@ -1,14 +1,14 @@
-# 🎓 School ERP System (Laravel)
+# 🎓 Education ERP System (Laravel)
 
-A powerful and modular **School ERP System** built using Laravel. This project simplifies the management of school data including students, employees, attendance, marks, salaries, and more—integrated with role-based access for Admin, Teacher, and Accounts users.
+A powerful and modular **Education ERP System** built using Laravel. This project simplifies the management of school data including students, employees, attendance, marks, salaries, and more—integrated with role-based access for Admin, Teacher, Accounts, Student users.
 
 ---
 
 ## 🚀 Features
 
 - 🔐 **Authentication**
-  - Login via email or phone
-  - OTP verification
+  - Login via email
+  - View Dashboard data according to role and permission
   - Session-based secure access
 
 - 👤 **User Management**
@@ -34,7 +34,6 @@ A powerful and modular **School ERP System** built using Laravel. This project s
 
 - 📅 **Attendance & Timetable**
   - View and manage daily attendance
-  - Auto-highlight Sundays and holidays
   - Daily timetable view (students/teachers)
 
 - 📊 **Reports and Analytics**
@@ -51,7 +50,7 @@ A powerful and modular **School ERP System** built using Laravel. This project s
 - **Database:** MySQL
 - **Payment Gateway:** Razorpay API
 - **Messaging:** WhatsApp API (send daily attendence to there parents Notifications)
-- **Authentication:** Email login 
+- **Authentication:** with E-mail and Password
 
 ---
 
@@ -70,7 +69,7 @@ A powerful and modular **School ERP System** built using Laravel. This project s
 ```bash
 # Clone the repository
 git clone https://github.com/TusharU2004/Education_ERP.git
-cd school-erp-system
+cd Education_ERP
 
 # Install dependencies
 composer install
