@@ -46,12 +46,12 @@ A powerful and modular **School ERP System** built using Laravel. This project s
 
 ## 🛠️ Tech Stack
 
-- **Backend:** Laravel 10 / 11 (MVC)
+- **Backend:** Laravel (MVC)
 - **Frontend:** Blade Templates, HTML5, CSS3, JavaScript
 - **Database:** MySQL
 - **Payment Gateway:** Razorpay API
-- **Messaging:** WhatsApp API (Bill Notifications)
-- **Authentication:** Email/Phone login with OTP
+- **Messaging:** WhatsApp API (send daily attendence to there parents Notifications)
+- **Authentication:** Email login 
 
 ---
 
@@ -122,4 +122,3 @@ Visit http://127.0.0.1:8000 in your browser.
  - Intern at Nectar Infoway
  - 📧 tusharumretiya11@gmail.com
  
-
