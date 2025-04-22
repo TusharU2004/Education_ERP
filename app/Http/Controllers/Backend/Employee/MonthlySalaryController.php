@@ -32,19 +32,25 @@ class MonthlySalaryController extends Controller
     {
         $month = $request->month;
         if (!empty($month)) {
-            $month = $request->month ?? date('m');
+
+            $year = date('Y',strtotime($request->month));
+            $month = date('m',strtotime($request->month));
 
             $employees = User::where('usertype', 'employee')
                 ->whereMonth('join_date', '<=', $month)
+                ->whereYear('join_date','<=',$year)
                 ->get();
-            $EmployeeData = [];
+           
+                $EmployeeData = [];
 
             foreach ($employees as $employee) {
                 $total_working_days = EmployeeAttendance::whereMonth('date', $month)
+                    ->whereYear('date',$year)
                     ->where('employee_id', $employee->id)
                     ->count();
 
-                $totalattend = EmployeeAttendance::whereMonth('date', $month)
+                    $totalattend = EmployeeAttendance::whereMonth('date', $month)
+                    ->whereYear('date',$year)
                     ->where('employee_id', $employee->id)
                     ->get();
 
@@ -65,13 +71,13 @@ class MonthlySalaryController extends Controller
                 $salaryPayment = DB::table('account_employee_salaries')
                     ->where('employee_id', $employee->id)
                     ->whereMonth('date', $month)
+                    ->whereYear('date',$year)
                     ->first();
 
                 $EmployeeData[] = [
                     'id' => $employee->id,
                     'id_no' => $employee->id_no,
-                    'name' => $employee->name,
-                    'lname' => $employee->lname,
+                    'name' => $employee->name.' '.$employee->lname,
                     'salary' => $salary,
                     'total_working_days' => $totalwork,
                     'present_days' => $presentcount,

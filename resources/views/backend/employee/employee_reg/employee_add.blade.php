@@ -26,7 +26,7 @@
                                  <div class="form-group">
                                     <h5>Employee Name <span class="text-danger">*</span></h5>
                                     <div class="controls">
-                                       <input type="text" name="name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name') }}">
+                                       <input type="text" name="name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name') }}" placeholder="Enter Employee Name">
                                        @error('name')<span class="text-danger">{{ $message }}</span>@enderror
                                     </div>
                                  </div>
@@ -36,7 +36,7 @@
                                  <div class="form-group">
                                     <h5>Father's Name <span class="text-danger">*</span></h5>
                                     <div class="controls">
-                                       <input type="text" name="fname" class="form-control @error('fname') is-invalid @enderror" value="{{ old('fname') }}">
+                                       <input type="text" name="fname" class="form-control @error('fname') is-invalid @enderror" value="{{ old('fname') }}" placeholder="Enter Employee Father Name">
                                        @error('fname')<span class="text-danger">{{ $message }}</span>@enderror
                                     </div>
                                  </div>
@@ -46,7 +46,7 @@
                                  <div class="form-group">
                                     <h5>Last Name <span class="text-danger">*</span></h5>
                                     <div class="controls">
-                                       <input type="text" name="lname" class="form-control @error('lname') is-invalid @enderror" value="{{ old('lname') }}">
+                                       <input type="text" name="lname" class="form-control @error('lname') is-invalid @enderror" value="{{ old('lname') }}" placeholder="Enter Employee Last Name">
                                        @error('lname')<span class="text-danger">{{ $message }}</span>@enderror
                                     </div>
                                  </div>
@@ -60,7 +60,7 @@
                                  <div class="form-group">
                                     <h5>Mobile Number <span class="text-danger">*</span></h5>
                                     <div class="controls">
-                                       <input type="text" name="mobile" class="form-control @error('mobile') is-invalid @enderror" value="{{ old('mobile') }}">
+                                       <input type="text" name="mobile" class="form-control @error('mobile') is-invalid @enderror" value="{{ old('mobile') }}" placeholder="Enter Mobile Number">
                                        @error('mobile')<span class="text-danger">{{ $message }}</span>@enderror
                                     </div>
                                  </div>
@@ -70,7 +70,7 @@
                                  <div class="form-group">
                                     <h5>Address <span class="text-danger">*</span></h5>
                                     <div class="controls">
-                                       <input type="text" name="address" class="form-control @error('address') is-invalid @enderror" value="{{ old('address') }}">
+                                       <input type="text" name="address" class="form-control @error('address') is-invalid @enderror" value="{{ old('address') }}" placeholder="Enter Employee Address">
                                        @error('address')<span class="text-danger">{{ $message }}</span>
                                        @enderror
                                     </div>
@@ -143,7 +143,7 @@
                                  <div class="form-group">
                                     <h5>Salary <span class="text-danger">*</span></h5>
                                     <div class="controls">
-                                       <input type="text" name="salary" class="form-control @error('salary') is-invalid @enderror" value="{{ old('salary') }}">
+                                       <input type="text" name="salary" class="form-control @error('salary') is-invalid @enderror" value="{{ old('salary') }}" placeholder="Enter Employee Salary">
                                        @error('salary')<span class="text-danger">{{ $message }}</span>@enderror
                                     </div>
                                  </div>
@@ -163,7 +163,7 @@
                                  <div class="form-group">
                                     <h5>Profile Image</h5>
                                     <div class="controls">
-                                       <input type="file" name="image" class="form-control" id="image" >
+                                       <input type="file" name="image" class="form-control" id="image" accept=".jpg,.jpeg,.png,.webp">
                                     </div>
                                  </div>
                               </div>

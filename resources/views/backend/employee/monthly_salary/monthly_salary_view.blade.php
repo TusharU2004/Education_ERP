@@ -17,13 +17,8 @@
                      <div class="row">
                         <div class="col-md-3">
                            <div class="form-group">
-                              <h5>Select Salary Month<span class="text-danger">*</span></h5>
-                              <select name="month" class="form-control">
-                                 <option value="" selected disabled>Select Month</option>
-                                 @foreach(range(1, 12) as $month)
-                                    <option value="{{ $month }}">{{ date('F', mktime(0, 0, 0, $month, 1)) }}</option>
-                                 @endforeach
-                              </select>
+                              <h5>Select Salary Month & year<span class="text-danger">*</span></h5>
+                              <input type="month" name="month" class="form-control" value="{{ request('month') }}">
                            </div>
                         </div>
                         
@@ -55,7 +50,7 @@
                                     <input type="hidden" name="month" value="{{ $employee['salary_month'] }}">
                                     <td>{{ $loop->iteration }}</td>
                                     <td>{{ $employee['id_no'] }}</td>
-                                    <td>{{ $employee['lname'] }} {{ $employee['name'] }}</td>
+                                    <td>{{ $employee['name'] }}</td>
                                     <td>{{ $employee['salary'] }}</td>
                                     <td>{{ $employee['total_working_days'] }}</td>
                                     <td>{{ $employee['present_days'] }}</td>

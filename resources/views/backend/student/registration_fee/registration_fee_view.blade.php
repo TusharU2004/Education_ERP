@@ -44,7 +44,6 @@
                            </div>
 
                            <div class="col-md-4" style="padding-top: 25px;">
-                            <button type="submit">Search</button>
                               <input type="submit" value="search" class="btn btn-rounded btn-dark mb-5">
                            </div>
                         </div>

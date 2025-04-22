@@ -54,8 +54,8 @@
                                             datasets: [{
                                                 data: [{{ $data['present'] }}, {{ $data['absent'] }}, {{ $data['holiday'] }}],
                                                 backgroundColor: [
-                                                    'rgba(54, 162, 235, 0.7)',  // Present
-                                                    'rgba(255, 99, 132, 0.7)',  // Absent
+                                                    'rgba(54, 162, 235, 0.7)',
+                                                    'rgba(255, 99, 132, 0.7)',
                                                     'rgba(255, 206, 86, 0.7)'   // Holiday
                                                 ],
                                                 borderColor: [

@@ -30,8 +30,8 @@
                                        <td>{{ $loop->iteration }}</td>
                                        <td> {{ date('d-m-Y', strtotime($value->date)) }}</td>
                                        <td>
-                                          <a href="{{ route('employee.attendance.edit', $value->date) }}" class="btn btn-info">Edit</a>
-                                          <a href="{{ route('employee.attendance.details', $value->date) }}" class="btn btn-primary">Details</a>
+                                          <a href="{{ route('employee.attendance.edit', $value->date) }}" class="btn btn-info btn-sm">Edit</a>
+                                          <a href="{{ route('employee.attendance.details', $value->date) }}" class="btn btn-primary btn-sm">Details</a>
                                        </td>
                                     </tr>
                                  @endforeach

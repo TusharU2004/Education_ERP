@@ -66,7 +66,10 @@
                                 <div>
                                     <p class="text-mute mt-20 mb-0 font-size-16">Total Profit This Month</p>
                                     <h3 class="text-white mb-0 font-weight-500">{{ $profit }}₹</h3>
-                                    <a href="{{ route('other.cost.add') }}" class="btn btn-rounded btn-info mb-5">Add Other Cost</a>
+                                    <a href="{{ route('monthly.profit.view',[
+                                        'start_date' => \Carbon\Carbon::now()->startOfMonth()->format('Y-m-d'),
+                                        'end_date' => \Carbon\Carbon::now()->endOfMonth()->format('Y-m-d')
+                                    ]) }}" class="btn btn-rounded btn-info mb-5">View Account Report</a>
                                 </div>
                             </div>
                         </div>
@@ -119,7 +122,7 @@
                                 <div>
                                     <p class="text-mute mt-20 mb-0 font-size-16">Student Attendance Reports</p>
                                     <h3 class="text-white mb-0 font-weight-500">Overview</h3>
-                                    <a href="{{ route('studentattendance.report.view') }}" class="btn btn-rounded btn-info mb-5">View Reports</a>
+                                    <a href="{{ route('studentattendance.report.view',['date'=>date('Y-m')]) }}" class="btn btn-rounded btn-info mb-5">View Reports</a>
                                 </div>
                             </div>
                         </div>

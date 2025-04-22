@@ -5,8 +5,6 @@
 
 <aside class="main-sidebar">
 
-   <section class="sidebar">
-
       <div class="user-profile">
          <div class="ulogo">
             <a href="{{ route('dashboard') }}">
@@ -18,6 +16,8 @@
             </a>
          </div>
       </div>
+
+      <section class="sidebar">
 
       <ul class="sidebar-menu" data-widget="tree">
 
